@@ -10,18 +10,20 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f5f5f5;
+      background: #f0f0f0;
       margin: 0;
       padding: 10px;
+      text-align: center;
     }
     .box {
       background: white;
       padding: 15px;
-      margin-bottom: 20px;
+      margin: 10px auto;
       border-radius: 8px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      max-width: 400px;
     }
-    input, textarea, button {
+    input, select, button, textarea {
       width: 100%;
       padding: 10px;
       margin-top: 5px;
@@ -43,9 +45,12 @@
       touch-action: none;
     }
     .hidden { display: none; }
+    h2, h3, h4 { margin: 10px 0; }
   </style>
 </head>
 <body>
+
+<h2>Keepecar6 - Controle de Veículos</h2>
 
 <div id="login" class="box">
   <h3>Login</h3>
@@ -56,6 +61,7 @@
 
 <div id="menu" class="box hidden">
   <h3>Menu Principal</h3>
+  <button onclick="show('cadastroVeiculo')">Cadastro de Veículos</button>
   <button onclick="show('registro')">Registro de Movimentação</button>
   <button onclick="showHistorico()">Histórico</button>
   <button onclick="backupJSON()">Backup JSON</button>
@@ -63,10 +69,19 @@
   <button onclick="logout()">Sair</button>
 </div>
 
+<div id="cadastroVeiculo" class="box hidden">
+  <h3>Cadastro de Veículos</h3>
+  <input type="text" id="novoVeiculo" placeholder="Placa do Veículo">
+  <button onclick="salvarVeiculo()">Salvar Veículo</button>
+  <button onclick="voltar()">Voltar</button>
+</div>
+
 <div id="registro" class="box hidden">
   <h3>Registro de Movimentação</h3>
   <input type="text" id="responsavel" placeholder="Nome do Responsável">
-  <input type="text" id="placa" placeholder="Placa do Veículo">
+  <select id="placaSelect">
+    <option value="">Selecione o Veículo</option>
+  </select>
   <input type="datetime-local" id="saida">
   <input type="datetime-local" id="chegada">
 
@@ -78,19 +93,19 @@
 </div>
 
 <div id="historico" class="box hidden">
-  <h3>Histórico</h3>
+  <h3>Histórico de Movimentações</h3>
   <div id="historicoContent" style="white-space: pre-wrap; max-height: 300px; overflow-y:auto;"></div>
   <button onclick="voltar()">Voltar</button>
 </div>
 
 <script>
-  // Login
   function login() {
     const u = document.getElementById('user').value;
     const p = document.getElementById('pass').value;
     if (u === 'admin' && p === 'admin1') {
       document.getElementById('login').classList.add('hidden');
       document.getElementById('menu').classList.remove('hidden');
+      carregarVeiculos();
     } else {
       alert('Usuário ou senha incorretos!');
     }
@@ -99,13 +114,36 @@
   function logout() { location.reload(); }
 
   function show(id) {
-    ['menu', 'registro', 'historico'].forEach(e => document.getElementById(e).classList.add('hidden'));
+    ['menu', 'cadastroVeiculo', 'registro', 'historico'].forEach(e => document.getElementById(e).classList.add('hidden'));
     document.getElementById(id).classList.remove('hidden');
+    if (id === 'registro') carregarVeiculos();
   }
 
   function voltar() { show('menu'); }
 
-  // Canvas assinatura (compatível com touch)
+  function salvarVeiculo() {
+    let novo = document.getElementById('novoVeiculo').value.trim();
+    if (novo) {
+      let veiculos = JSON.parse(localStorage.getItem('veiculos') || '[]');
+      veiculos.push(novo);
+      localStorage.setItem('veiculos', JSON.stringify(veiculos));
+      alert('Veículo cadastrado.');
+      document.getElementById('novoVeiculo').value = '';
+    }
+  }
+
+  function carregarVeiculos() {
+    let veiculos = JSON.parse(localStorage.getItem('veiculos') || '[]');
+    let select = document.getElementById('placaSelect');
+    select.innerHTML = '<option value="">Selecione o Veículo</option>';
+    veiculos.forEach(v => {
+      let opt = document.createElement('option');
+      opt.value = v;
+      opt.textContent = v;
+      select.appendChild(opt);
+    });
+  }
+
   const canvas = document.getElementById('canvas');
   const ctx = canvas.getContext('2d');
   let desenhando = false;
@@ -134,11 +172,12 @@
   function salvarRegistro() {
     const registro = {
       responsavel: document.getElementById('responsavel').value,
-      placa: document.getElementById('placa').value,
+      placa: document.getElementById('placaSelect').value,
       saida: document.getElementById('saida').value,
       chegada: document.getElementById('chegada').value,
       assinatura: canvas.toDataURL()
     };
+    if (!registro.placa) { alert('Selecione um veículo.'); return; }
     let historico = JSON.parse(localStorage.getItem('historico') || '[]');
     historico.push(registro);
     localStorage.setItem('historico', JSON.stringify(historico));
@@ -194,4 +233,3 @@
 
 </body>
 </html>
-
