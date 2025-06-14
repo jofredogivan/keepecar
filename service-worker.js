@@ -1,11 +1,13 @@
 self.addEventListener('install', (e) => {
+  console.log('Service Worker instalado');
   e.waitUntil(
-    caches.open('keepecar6-cache').then((cache) => {
+    caches.open('keepecar-cache').then((cache) => {
       return cache.addAll([
-        '/',
-        '/index.html',
-        '/manifest.json',
-        '/icon-192.png'
+        './',
+        './index.html',
+        './manifest.json',
+        './icon-192.png',
+        './icon-512.png'
       ]);
     })
   );
