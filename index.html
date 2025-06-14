@@ -79,11 +79,16 @@
 <div id="registro" class="box hidden">
   <h3>Registro de Movimentação</h3>
   <input type="text" id="responsavel" placeholder="Nome do Responsável">
+
   <select id="placaSelect">
     <option value="">Selecione o Veículo</option>
   </select>
-  <input type="datetime-local" id="saida">
-  <input type="datetime-local" id="chegada">
+
+  <label for="saida">Data e Hora da Saída:</label>
+  <input type="datetime-local" id="saida" placeholder="Data e Hora de Saída">
+
+  <label for="chegada">Data e Hora da Chegada:</label>
+  <input type="datetime-local" id="chegada" placeholder="Data e Hora de Chegada">
 
   <h4>Assinatura:</h4>
   <canvas id="canvas"></canvas>
@@ -211,7 +216,7 @@
     let h = JSON.parse(localStorage.getItem('historico') || '[]');
     let y = 20;
     doc.setFontSize(16);
-    doc.text('Backup de Movimentação', 20, y);
+    doc.text('Backup de Movimentação - Keepecar6', 20, y);
     y += 10;
     h.forEach((r, i) => {
       doc.setFontSize(10);
@@ -233,4 +238,3 @@
 
 </body>
 </html>
-
