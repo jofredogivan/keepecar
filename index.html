@@ -1,251 +1,54 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <link rel="manifest" href="manifest.json">
-
-  <meta charset="UTF-8">
-  <title>Keepecar6 - Controle de Veículos</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      margin: 0;
-      padding: 20px;
-    }
-    .container {
-      max-width: 600px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    h2 {
-      text-align: center;
-    }
-    label {
-      display: block;
-      margin-top: 10px;
-    }
-    input, select {
-      width: 100%;
-      padding: 8px;
-      margin-top: 4px;
-      box-sizing: border-box;
-    }
-    canvas {
-      border: 1px solid #ccc;
-      width: 100%;
-      height: 200px;
-    }
-    button {
-      margin-top: 10px;
-      padding: 10px;
-      width: 100%;
-      background: #2c3e50;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #34495e;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 6px;
-      text-align: left;
-    }
-    .hidden {
-      display: none;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keepecar6</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2c3e50">
+    <link rel="icon" href="icon-192.png" type="image/png">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background-color: #f2f2f2;
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+    </style>
 </head>
 <body>
-  <div class="container" id="loginContainer">
-    <h2>Keepecar6 - Login</h2>
-    <label>Usuário:</label>
-    <input type="text" id="usuario">
-    <label>Senha:</label>
-    <input type="password" id="senha">
-    <button onclick="login()">Entrar</button>
-  </div>
 
-  <div class="container hidden" id="mainContainer">
-    <h2>Keepecar6 - Controle de Veículos</h2>
-    <label>Responsável:</label>
-    <input type="text" id="responsavel">
-    <label>Placa do Veículo:</label>
-    <input type="text" id="placa">
-    <label>Horário:</label>
-    <input type="datetime-local" id="horario">
-    <label>Tipo:</label>
-    <select id="tipo">
-      <option value="Saída">Saída</option>
-      <option value="Chegada">Chegada</option>
-    </select>
-    <label>Assinatura:</label>
-    <canvas id="assinatura"></canvas>
-    <button onclick="limpar()">Limpar Assinatura</button>
-    <button onclick="registrar()">Registrar</button>
-    <button onclick="gerarPDF()">Exportar PDF</button>
-    <button onclick="salvarBackupLocal()">Backup Local (JSON)</button>
-    <div id="historico"></div>
-  </div>
+    <h1>Bem-vindo ao Keepecar6</h1>
+    <p>Seu app de backup e monitoramento.</p>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script>
-    function login() {
-      const user = document.getElementById('usuario').value;
-      const pass = document.getElementById('senha').value;
-      if (user === "admin" && pass === "admin1") {
-        document.getElementById('loginContainer').classList.add("hidden");
-        document.getElementById('mainContainer').classList.remove("hidden");
-        carregarHistorico();
-      } else {
-        alert("Usuário ou senha incorretos.");
-      }
-    }
+    <button onclick="fazerBackup()">Iniciar Backup</button>
 
-    let canvas = document.getElementById('assinatura');
-    let ctx = canvas.getContext('2d');
-    let desenhando = false;
-
-    function getPos(e) {
-      let rect = canvas.getBoundingClientRect();
-      return e.touches ? {
-        x: e.touches[0].clientX - rect.left,
-        y: e.touches[0].clientY - rect.top
-      } : {
-        x: e.offsetX,
-        y: e.offsetY
-      };
-    }
-
-    canvas.addEventListener('mousedown', e => {
-      desenhando = true;
-      let pos = getPos(e);
-      ctx.beginPath();
-      ctx.moveTo(pos.x, pos.y);
-    });
-
-    canvas.addEventListener('mousemove', e => {
-      if (desenhando) {
-        let pos = getPos(e);
-        ctx.lineTo(pos.x, pos.y);
-        ctx.stroke();
-      }
-    });
-
-    canvas.addEventListener('mouseup', () => desenhando = false);
-    canvas.addEventListener('mouseout', () => desenhando = false);
-
-    canvas.addEventListener('touchstart', e => {
-      e.preventDefault();
-      desenhando = true;
-      let pos = getPos(e);
-      ctx.beginPath();
-      ctx.moveTo(pos.x, pos.y);
-    });
-
-    canvas.addEventListener('touchmove', e => {
-      e.preventDefault();
-      if (desenhando) {
-        let pos = getPos(e);
-        ctx.lineTo(pos.x, pos.y);
-        ctx.stroke();
-      }
-    });
-
-    canvas.addEventListener('touchend', () => desenhando = false);
-
-    function limpar() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-
-    function registrar() {
-      const responsavel = document.getElementById('responsavel').value;
-      const placa = document.getElementById('placa').value;
-      const horario = document.getElementById('horario').value;
-      const tipo = document.getElementById('tipo').value;
-      const assinatura = canvas.toDataURL();
-
-      if (!responsavel || !placa || !horario) {
-        alert("Preencha todos os campos.");
-        return;
-      }
-
-      const registros = JSON.parse(localStorage.getItem("registros") || "[]");
-      registros.push({ responsavel, placa, horario, tipo, assinatura });
-      localStorage.setItem("registros", JSON.stringify(registros));
-      carregarHistorico();
-      limpar();
-    }
-
-    function carregarHistorico() {
-      let registros = JSON.parse(localStorage.getItem("registros") || "[]");
-      const historico = document.getElementById("historico");
-
-      if (registros.length === 0) {
-        historico.innerHTML = "<p>Nenhum registro encontrado.</p>";
-        return;
-      }
-
-      let html = "<table><tr><th>Responsável</th><th>Placa</th><th>Horário</th><th>Tipo</th><th>Assinatura</th></tr>";
-      for (let r of registros) {
-        html += `<tr>
-          <td>${r.responsavel}</td>
-          <td>${r.placa}</td>
-          <td>${r.horario}</td>
-          <td>${r.tipo}</td>
-          <td><img src="${r.assinatura}" width="100"/></td>
-        </tr>`;
-      }
-      html += "</table>";
-      historico.innerHTML = html;
-    }
-
-    async function gerarPDF() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      const registros = JSON.parse(localStorage.getItem("registros") || "[]");
-      let y = 10;
-
-      for (let r of registros) {
-        doc.text(`Responsável: ${r.responsavel}`, 10, y);
-        y += 7;
-        doc.text(`Placa: ${r.placa}`, 10, y);
-        y += 7;
-        doc.text(`Horário: ${r.horario}`, 10, y);
-        y += 7;
-        doc.text(`Tipo: ${r.tipo}`, 10, y);
-        y += 7;
-        if (r.assinatura) {
-          doc.addImage(r.assinatura, 'PNG', 10, y, 50, 20);
-          y += 25;
+    <script>
+        function fazerBackup() {
+            alert('Função de backup iniciada (exemplo)! Implemente aqui a lógica real.');
         }
-        if (y > 270) {
-          doc.addPage();
-          y = 10;
-        }
-      }
-      doc.save("historico_keepecar6.pdf");
-    }
 
-    function salvarBackupLocal() {
-      const registros = localStorage.getItem("registros") || "[]";
-      const blob = new Blob([registros], { type: "application/json" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = `keepecar6_backup_${new Date().toISOString()}.json`;
-      link.click();
-    }
-  </script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js')
+            .then(() => console.log('✅ Service Worker registrado!'))
+            .catch(err => console.log('❌ Erro ao registrar Service Worker:', err));
+        }
+    </script>
+
 </body>
 </html>
