@@ -1,6 +1,10 @@
 {
-  "short_name": "Keepecar6",
   "name": "Keepecar6 - Controle de Veículos",
+  "short_name": "Keepecar6",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#f0f4f8",
+  "theme_color": "#2c3e50",
   "icons": [
     {
       "src": "icon-192.png",
@@ -12,9 +16,5 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ],
-  "start_url": "./index.html",
-  "display": "standalone",
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff"
+  ]
 }
