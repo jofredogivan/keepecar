@@ -8,83 +8,139 @@
   <meta name="theme-color" content="#2E86C1">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background-color: #f0f0f0; }
-    #menu, #cadastroVeiculo, #registro, #historico, #assinatura { display: none; }
-    button { margin: 5px; padding: 10px; }
-    input, textarea { margin: 5px; padding: 5px; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+    }
+    h2, h3 {
+      color: #2E86C1;
+      text-align: center;
+    }
+    .container {
+      background: #fff;
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 400px;
+    }
+    input, textarea, select, button {
+      width: 100%;
+      margin: 5px 0;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    button {
+      background: #2E86C1;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #1B4F72;
+    }
+    canvas {
+      border: 1px solid #000;
+      width: 100%;
+      height: 150px;
+    }
+    #historicoContent {
+      white-space: pre-wrap;
+      background: #f9f9f9;
+      padding: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+    }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
 
 <h2>Keepecar6 - Controle de Veículos</h2>
 
-<!-- Login -->
-<div id="login">
-  <h3>Login</h3>
-  <input type="text" id="user" placeholder="Usuário"><br>
-  <input type="password" id="pass" placeholder="Senha"><br>
-  <button onclick="login()">Entrar</button>
-</div>
+<div class="container">
 
-<!-- Menu -->
-<div id="menu">
-  <h3>Menu Principal</h3>
-  <button onclick="show('cadastroVeiculo')">Cadastro de Veículos</button>
-  <button onclick="show('registro')">Registro de Movimentação</button>
-  <button onclick="showHistorico()">Histórico</button>
-  <button onclick="show('assinatura')">Assinatura</button>
-  <button onclick="backupJSON()">Backup JSON</button>
-  <button onclick="fazerBackupPDF()">Backup PDF</button>
-  <button onclick="logout()">Sair</button>
-</div>
+  <!-- Login -->
+  <div id="login">
+    <h3>Login</h3>
+    <input type="text" id="user" placeholder="Usuário">
+    <input type="password" id="pass" placeholder="Senha">
+    <button onclick="login()">Entrar</button>
+  </div>
 
-<!-- Cadastro de Veículos -->
-<div id="cadastroVeiculo">
-  <h3>Cadastro de Veículo</h3>
-  <input type="text" id="placa" placeholder="Placa"><br>
-  <input type="text" id="modelo" placeholder="Modelo"><br>
-  <textarea id="obs" placeholder="Observações"></textarea><br>
-  <button onclick="salvarVeiculo()">Salvar</button>
-  <button onclick="voltar()">Voltar</button>
-</div>
+  <!-- Menu Principal -->
+  <div id="menu" class="hidden">
+    <h3>Menu Principal</h3>
+    <button onclick="show('cadastroVeiculo')">Cadastro de Veículos</button>
+    <button onclick="show('registro')">Registro de Movimentação</button>
+    <button onclick="showHistorico()">Histórico</button>
+    <button onclick="show('assinatura')">Assinatura</button>
+    <button onclick="backupJSON()">Backup JSON</button>
+    <button onclick="fazerBackupPDF()">Backup PDF</button>
+    <button onclick="logout()">Sair</button>
+  </div>
 
-<!-- Registro de Movimentação -->
-<div id="registro">
-  <h3>Registro de Movimentação</h3>
-  <input type="text" id="responsavel" placeholder="Responsável"><br>
-  <input type="text" id="placaMov" placeholder="Placa do Veículo"><br>
-  <select id="tipoMov">
-    <option>Entrada</option>
-    <option>Saída</option>
-  </select><br>
-  <button onclick="salvarRegistro()">Salvar Registro</button>
-  <button onclick="voltar()">Voltar</button>
-</div>
+  <!-- Cadastro Veículo -->
+  <div id="cadastroVeiculo" class="hidden">
+    <h3>Cadastro de Veículo</h3>
+    <input type="text" id="placa" placeholder="Placa">
+    <input type="text" id="modelo" placeholder="Modelo">
+    <textarea id="obs" placeholder="Observações"></textarea>
+    <button onclick="salvarVeiculo()">Salvar</button>
+    <button onclick="voltar()">Voltar</button>
+  </div>
 
-<!-- Histórico -->
-<div id="historico">
-  <h3>Histórico de Registros</h3>
-  <pre id="historicoContent"></pre>
-  <button onclick="voltar()">Voltar</button>
-</div>
+  <!-- Registro Movimentação -->
+  <div id="registro" class="hidden">
+    <h3>Registro de Movimentação</h3>
+    <input type="text" id="responsavel" placeholder="Responsável">
+    <input type="text" id="placaMov" placeholder="Placa do Veículo">
+    <select id="tipoMov">
+      <option>Entrada</option>
+      <option>Saída</option>
+    </select>
+    <button onclick="salvarRegistro()">Salvar Registro</button>
+    <button onclick="voltar()">Voltar</button>
+  </div>
 
-<!-- Assinatura -->
-<div id="assinatura">
-  <h3>Assinatura Digital</h3>
-  <canvas id="canvas" width="300" height="150" style="border:1px solid #000;"></canvas><br>
-  <button onclick="limparAssinatura()">Limpar</button>
-  <button onclick="salvarAssinatura()">Salvar</button>
-  <button onclick="voltar()">Voltar</button>
+  <!-- Histórico -->
+  <div id="historico" class="hidden">
+    <h3>Histórico de Registros</h3>
+    <div id="historicoContent"></div>
+    <button onclick="voltar()">Voltar</button>
+  </div>
+
+  <!-- Assinatura -->
+  <div id="assinatura" class="hidden">
+    <h3>Assinatura Digital</h3>
+    <canvas id="canvas" width="300" height="150"></canvas>
+    <button onclick="limparAssinatura()">Limpar</button>
+    <button onclick="salvarAssinatura()">Salvar</button>
+    <button onclick="voltar()">Voltar</button>
+  </div>
+
 </div>
 
 <script>
-  // Login simples
+  // Login
   function login() {
     const user = document.getElementById('user').value;
     const pass = document.getElementById('pass').value;
     if (user === 'admin' && pass === 'admin1') {
-      document.getElementById('login').style.display = 'none';
-      document.getElementById('menu').style.display = 'block';
+      toggle('login', false);
+      toggle('menu', true);
     } else {
       alert('Usuário ou senha incorretos.');
     }
@@ -94,16 +150,20 @@
     location.reload();
   }
 
+  function toggle(id, show) {
+    document.getElementById(id).classList.toggle('hidden', !show);
+  }
+
   function show(id) {
-    document.querySelectorAll('#menu, #cadastroVeiculo, #registro, #historico, #assinatura').forEach(div => div.style.display = 'none');
-    document.getElementById(id).style.display = 'block';
+    ['menu', 'cadastroVeiculo', 'registro', 'historico', 'assinatura'].forEach(div => toggle(div, false));
+    toggle(id, true);
   }
 
   function voltar() {
     show('menu');
   }
 
-  // Cadastro de Veículo
+  // Cadastro Veículo
   function salvarVeiculo() {
     let veiculos = JSON.parse(localStorage.getItem('veiculos') || '[]');
     veiculos.push({
@@ -116,7 +176,7 @@
     voltar();
   }
 
-  // Registro de movimentação
+  // Registro Movimentação
   function salvarRegistro() {
     let registros = JSON.parse(localStorage.getItem('registros') || '[]');
     registros.push({
@@ -133,7 +193,8 @@
   // Histórico
   function showHistorico() {
     let registros = JSON.parse(localStorage.getItem('registros') || '[]');
-    document.getElementById('historicoContent').textContent = JSON.stringify(registros, null, 2);
+    let content = registros.map(r => `Responsável: ${r.responsavel}\nPlaca: ${r.placa}\nTipo: ${r.tipo}\nHorário: ${r.horario}\n---`).join('\n');
+    document.getElementById('historicoContent').innerText = content || 'Nenhum registro.';
     show('historico');
   }
 
@@ -154,15 +215,13 @@
   async function fazerBackupPDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-
     let veiculos = JSON.parse(localStorage.getItem('veiculos') || '[]');
     let registros = JSON.parse(localStorage.getItem('registros') || '[]');
-
     doc.setFontSize(16);
     doc.text("Backup - Keepecar6", 20, 20);
 
     doc.setFontSize(12);
-    doc.text("== Veículos Cadastrados ==", 20, 30);
+    doc.text("== Veículos ==", 20, 30);
     let y = 40;
     veiculos.forEach(v => {
       doc.text(`Placa: ${v.placa} | Modelo: ${v.modelo} | Obs: ${v.obs}`, 20, y);
@@ -171,9 +230,8 @@
     });
 
     y += 10;
-    doc.text("== Registros de Movimentação ==", 20, y);
+    doc.text("== Registros ==", 20, y);
     y += 10;
-
     registros.forEach(r => {
       doc.text(`Responsável: ${r.responsavel} | Placa: ${r.placa} | Tipo: ${r.tipo} | Horário: ${r.horario}`, 20, y);
       y += 10;
@@ -183,7 +241,7 @@
     doc.save('backup_keepecar6.pdf');
   }
 
-  // Assinatura Digital
+  // Assinatura
   const canvas = document.getElementById('canvas');
   const ctx = canvas.getContext('2d');
   let drawing = false;
@@ -209,10 +267,10 @@
   function salvarAssinatura() {
     const dataURL = canvas.toDataURL();
     localStorage.setItem('assinatura', dataURL);
-    alert('Assinatura salva no navegador.');
+    alert('Assinatura salva.');
   }
 
-  // Instalação PWA
+  // PWA Service Worker
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('service-worker.js');
   }
@@ -220,4 +278,3 @@
 
 </body>
 </html>
-
