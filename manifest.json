@@ -1,7 +1,7 @@
 {
   "name": "Keepecar6",
   "short_name": "Keepecar6",
-  "start_url": "./index.html",
+  "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#2c3e50",
