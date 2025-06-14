@@ -7,7 +7,7 @@
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icon-192.png">
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f4f4f4; }
+    body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 20px; }
     .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
     h2 { text-align: center; }
     label { display: block; margin-top: 10px; }
@@ -48,6 +48,9 @@
     <button onclick="limpar()">Limpar Assinatura</button>
     <button onclick="registrar()">Registrar</button>
     <button onclick="gerarPDF()">Exportar PDF</button>
+    <button onclick="backup()">Backup Histórico</button>
+    <input type="file" id="restoreInput" onchange="restaurarBackup()" style="display:none;">
+    <button onclick="document.getElementById('restoreInput').click()">Restaurar Backup</button>
     <div id="historico"></div>
   </div>
 
@@ -56,7 +59,7 @@
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('service-worker.js')
         .then(() => console.log('Service Worker registrado com sucesso!'))
-        .catch(error => console.log('Falha ao registrar o Service Worker:', error));
+        .catch(error => console.log('Falha ao registrar Service Worker:', error));
     }
 
     function login() {
@@ -169,6 +172,35 @@
       });
 
       doc.save("historico_keepecar6.pdf");
+    }
+
+    function backup() {
+      const registros = localStorage.getItem("registros");
+      const blob = new Blob([registros], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = "backup_keepecar6.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function restaurarBackup() {
+      const file = document.getElementById('restoreInput').files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          localStorage.setItem("registros", JSON.stringify(data));
+          carregarHistorico();
+          alert("Backup restaurado com sucesso!");
+        } catch {
+          alert("Erro ao restaurar o backup.");
+        }
+      };
+      reader.readAsText(file);
     }
   </script>
 </body>
