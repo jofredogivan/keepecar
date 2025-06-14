@@ -8,9 +8,9 @@
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js').then(() => {
-        console.log('Service Worker registrado.');
+        console.log('Service Worker registrado com sucesso.');
       }).catch(error => {
-        console.log('Erro ao registrar Service Worker:', error);
+        console.log('Falha ao registrar Service Worker:', error);
       });
     }
   </script>
@@ -34,9 +34,9 @@
 <div class="container" id="loginContainer">
   <h2>Login</h2>
   <label>Usuário:</label>
-  <input type="text" id="usuario">
+  <input type="text" id="usuario" placeholder="Digite: admin">
   <label>Senha:</label>
-  <input type="password" id="senha">
+  <input type="password" id="senha" placeholder="Digite: admin1">
   <button onclick="login()">Entrar</button>
 </div>
 
@@ -101,7 +101,7 @@
       document.getElementById('menuContainer').classList.remove('hidden');
       carregarPlacas();
     } else {
-      alert("Login inválido!");
+      alert("Login ou senha inválidos!");
     }
   }
 
@@ -173,6 +173,7 @@
     }
   });
   canvas.addEventListener('mouseup', () => desenhando = false);
+
   canvas.addEventListener('touchstart', e => {
     e.preventDefault();
     desenhando = true;
@@ -240,6 +241,7 @@
     document.getElementById('historico').innerHTML = html;
   }
 
+  // Backup
   function fazerBackup() {
     const data = {
       veiculos: JSON.parse(localStorage.getItem('veiculos') || '[]'),
