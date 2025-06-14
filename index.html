@@ -2,291 +2,279 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Keepecar6 - Controle de Veículos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Keepecar6 - Controle de Veículos</title>
   <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2E86C1">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f0f4f8;
+      background: #f2f2f2;
       margin: 0;
       padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+    }
+    h2, h3 {
+      color: #2E86C1;
       text-align: center;
     }
     .container {
-      max-width: 700px;
-      margin: auto;
       background: #fff;
       padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      margin-top: 30px;
+      margin-top: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 400px;
     }
-    h2, h3 {
-      color: #2c3e50;
-    }
-    label {
-      display: block;
-      margin-top: 10px;
-      text-align: left;
-    }
-    input, select, button {
+    input, textarea, select, button {
       width: 100%;
+      margin: 5px 0;
       padding: 10px;
-      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
       box-sizing: border-box;
     }
     button {
-      background-color: #2c3e50;
+      background: #2E86C1;
       color: white;
       border: none;
-      border-radius: 5px;
       cursor: pointer;
+      transition: background 0.3s;
     }
     button:hover {
-      background-color: #34495e;
+      background: #1B4F72;
     }
     canvas {
+      border: 1px solid #000;
+      width: 100%;
+      height: 150px;
+    }
+    #historicoContent {
+      white-space: pre-wrap;
+      background: #f9f9f9;
+      padding: 10px;
+      max-height: 300px;
+      overflow-y: auto;
       border: 1px solid #ccc;
-      width: 100%;
-      height: 200px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 6px;
-      text-align: center;
     }
     .hidden { display: none; }
   </style>
 </head>
 <body>
 
-  <div class="container" id="loginContainer">
-    <h2>Keepecar6 - Login</h2>
-    <label>Usuário:</label>
-    <input type="text" id="usuario">
-    <label>Senha:</label>
-    <input type="password" id="senha">
+<h2>Keepecar6 - Controle de Veículos</h2>
+
+<div class="container">
+
+  <!-- Login -->
+  <div id="login">
+    <h3>Login</h3>
+    <input type="text" id="user" placeholder="Usuário">
+    <input type="password" id="pass" placeholder="Senha">
     <button onclick="login()">Entrar</button>
   </div>
 
-  <div class="container hidden" id="mainContainer">
-    <h2>Keepecar6 - Controle de Veículos</h2>
-
-    <h3>Cadastro de Veículos</h3>
-    <input type="text" id="novoVeiculo" placeholder="Nome do Veículo">
-    <button onclick="cadastrarVeiculo()">Cadastrar Veículo</button>
-
-    <h3>Registro de Movimentação</h3>
-    <label>Responsável:</label>
-    <input type="text" id="responsavel">
-    <label>Veículo:</label>
-    <select id="placa"></select>
-    <label>Horário:</label>
-    <input type="datetime-local" id="horario">
-    <label>Tipo:</label>
-    <select id="tipo">
-      <option value="Saída">Saída</option>
-      <option value="Chegada">Chegada</option>
-    </select>
-
-    <label>Assinatura:</label>
-    <canvas id="assinatura"></canvas>
-    <button onclick="limpar()">Limpar Assinatura</button>
-    <button onclick="registrar()">Registrar Movimentação</button>
-
-    <h3>Histórico</h3>
-    <div id="historico"></div>
-
-    <h3>Exportações</h3>
-    <button onclick="gerarPDF()">Exportar Histórico em PDF</button>
-    <button onclick="fazerBackup()">Backup JSON</button>
+  <!-- Menu Principal -->
+  <div id="menu" class="hidden">
+    <h3>Menu Principal</h3>
+    <button onclick="show('cadastroVeiculo')">Cadastro de Veículos</button>
+    <button onclick="show('registro')">Registro de Movimentação</button>
+    <button onclick="showHistorico()">Histórico</button>
+    <button onclick="show('assinatura')">Assinatura</button>
+    <button onclick="backupJSON()">Backup JSON</button>
+    <button onclick="fazerBackupPDF()">Backup PDF</button>
+    <button onclick="logout()">Sair</button>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script>
-    // Login simples
-    function login() {
-      const user = document.getElementById('usuario').value;
-      const pass = document.getElementById('senha').value;
-      if (user === "admin" && pass === "admin1") {
-        document.getElementById('loginContainer').classList.add('hidden');
-        document.getElementById('mainContainer').classList.remove('hidden');
-        carregarVeiculos();
-        carregarHistorico();
-      } else {
-        alert("Usuário ou senha incorretos.");
-      }
+  <!-- Cadastro Veículo -->
+  <div id="cadastroVeiculo" class="hidden">
+    <h3>Cadastro de Veículo</h3>
+    <input type="text" id="placa" placeholder="Placa">
+    <input type="text" id="modelo" placeholder="Modelo">
+    <textarea id="obs" placeholder="Observações"></textarea>
+    <button onclick="salvarVeiculo()">Salvar</button>
+    <button onclick="voltar()">Voltar</button>
+  </div>
+
+  <!-- Registro Movimentação -->
+  <div id="registro" class="hidden">
+    <h3>Registro de Movimentação</h3>
+    <input type="text" id="responsavel" placeholder="Responsável">
+    <input type="text" id="placaMov" placeholder="Placa do Veículo">
+    <select id="tipoMov">
+      <option>Entrada</option>
+      <option>Saída</option>
+    </select>
+    <button onclick="salvarRegistro()">Salvar Registro</button>
+    <button onclick="voltar()">Voltar</button>
+  </div>
+
+  <!-- Histórico -->
+  <div id="historico" class="hidden">
+    <h3>Histórico de Registros</h3>
+    <div id="historicoContent"></div>
+    <button onclick="voltar()">Voltar</button>
+  </div>
+
+  <!-- Assinatura -->
+  <div id="assinatura" class="hidden">
+    <h3>Assinatura Digital</h3>
+    <canvas id="canvas" width="300" height="150"></canvas>
+    <button onclick="limparAssinatura()">Limpar</button>
+    <button onclick="salvarAssinatura()">Salvar</button>
+    <button onclick="voltar()">Voltar</button>
+  </div>
+
+</div>
+
+<script>
+  // Login
+  function login() {
+    const user = document.getElementById('user').value;
+    const pass = document.getElementById('pass').value;
+    if (user === 'admin' && pass === 'admin1') {
+      toggle('login', false);
+      toggle('menu', true);
+    } else {
+      alert('Usuário ou senha incorretos.');
     }
+  }
 
-    // Cadastro de veículos
-    function cadastrarVeiculo() {
-      const nome = document.getElementById('novoVeiculo').value;
-      if (!nome) {
-        alert("Digite o nome do veículo.");
-        return;
-      }
-      const veiculos = JSON.parse(localStorage.getItem('veiculos') || '[]');
-      veiculos.push(nome);
-      localStorage.setItem('veiculos', JSON.stringify(veiculos));
-      carregarVeiculos();
-      document.getElementById('novoVeiculo').value = '';
-    }
+  function logout() {
+    location.reload();
+  }
 
-    function carregarVeiculos() {
-      const select = document.getElementById('placa');
-      select.innerHTML = "";
-      const veiculos = JSON.parse(localStorage.getItem('veiculos') || '[]');
-      veiculos.forEach(v => {
-        const option = document.createElement('option');
-        option.value = v;
-        option.text = v;
-        select.appendChild(option);
-      });
-    }
+  function toggle(id, show) {
+    document.getElementById(id).classList.toggle('hidden', !show);
+  }
 
-    // Assinatura
-    let canvas = document.getElementById('assinatura');
-    let ctx = canvas.getContext('2d');
-    let desenhando = false;
+  function show(id) {
+    ['menu', 'cadastroVeiculo', 'registro', 'historico', 'assinatura'].forEach(div => toggle(div, false));
+    toggle(id, true);
+  }
 
-    function getPos(e) {
-      let rect = canvas.getBoundingClientRect();
-      return e.touches ? {
-        x: e.touches[0].clientX - rect.left,
-        y: e.touches[0].clientY - rect.top
-      } : {
-        x: e.offsetX,
-        y: e.offsetY
-      };
-    }
+  function voltar() {
+    show('menu');
+  }
 
-    canvas.addEventListener('mousedown', e => {
-      desenhando = true;
-      let pos = getPos(e);
-      ctx.beginPath();
-      ctx.moveTo(pos.x, pos.y);
+  // Cadastro Veículo
+  function salvarVeiculo() {
+    let veiculos = JSON.parse(localStorage.getItem('veiculos') || '[]');
+    veiculos.push({
+      placa: document.getElementById('placa').value,
+      modelo: document.getElementById('modelo').value,
+      obs: document.getElementById('obs').value
+    });
+    localStorage.setItem('veiculos', JSON.stringify(veiculos));
+    alert('Veículo salvo.');
+    voltar();
+  }
+
+  // Registro Movimentação
+  function salvarRegistro() {
+    let registros = JSON.parse(localStorage.getItem('registros') || '[]');
+    registros.push({
+      responsavel: document.getElementById('responsavel').value,
+      placa: document.getElementById('placaMov').value,
+      tipo: document.getElementById('tipoMov').value,
+      horario: new Date().toLocaleString()
+    });
+    localStorage.setItem('registros', JSON.stringify(registros));
+    alert('Registro salvo.');
+    voltar();
+  }
+
+  // Histórico
+  function showHistorico() {
+    let registros = JSON.parse(localStorage.getItem('registros') || '[]');
+    let content = registros.map(r => `Responsável: ${r.responsavel}\nPlaca: ${r.placa}\nTipo: ${r.tipo}\nHorário: ${r.horario}\n---`).join('\n');
+    document.getElementById('historicoContent').innerText = content || 'Nenhum registro.';
+    show('historico');
+  }
+
+  // Backup JSON
+  function backupJSON() {
+    let data = {
+      veiculos: JSON.parse(localStorage.getItem('veiculos') || '[]'),
+      registros: JSON.parse(localStorage.getItem('registros') || '[]')
+    };
+    let blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    let link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'backup_keepecar6.json';
+    link.click();
+  }
+
+  // Backup PDF
+  async function fazerBackupPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    let veiculos = JSON.parse(localStorage.getItem('veiculos') || '[]');
+    let registros = JSON.parse(localStorage.getItem('registros') || '[]');
+    doc.setFontSize(16);
+    doc.text("Backup - Keepecar6", 20, 20);
+
+    doc.setFontSize(12);
+    doc.text("== Veículos ==", 20, 30);
+    let y = 40;
+    veiculos.forEach(v => {
+      doc.text(`Placa: ${v.placa} | Modelo: ${v.modelo} | Obs: ${v.obs}`, 20, y);
+      y += 10;
+      if (y > 270) { doc.addPage(); y = 20; }
     });
 
-    canvas.addEventListener('mousemove', e => {
-      if (desenhando) {
-        let pos = getPos(e);
-        ctx.lineTo(pos.x, pos.y);
-        ctx.stroke();
-      }
+    y += 10;
+    doc.text("== Registros ==", 20, y);
+    y += 10;
+    registros.forEach(r => {
+      doc.text(`Responsável: ${r.responsavel} | Placa: ${r.placa} | Tipo: ${r.tipo} | Horário: ${r.horario}`, 20, y);
+      y += 10;
+      if (y > 270) { doc.addPage(); y = 20; }
     });
 
-    canvas.addEventListener('mouseup', () => desenhando = false);
-    canvas.addEventListener('mouseout', () => desenhando = false);
-    canvas.addEventListener('touchstart', e => {
-      e.preventDefault();
-      desenhando = true;
-      let pos = getPos(e);
-      ctx.beginPath();
-      ctx.moveTo(pos.x, pos.y);
-    });
+    doc.save('backup_keepecar6.pdf');
+  }
 
-    canvas.addEventListener('touchmove', e => {
-      e.preventDefault();
-      if (desenhando) {
-        let pos = getPos(e);
-        ctx.lineTo(pos.x, pos.y);
-        ctx.stroke();
-      }
-    });
+  // Assinatura
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  let drawing = false;
 
-    canvas.addEventListener('touchend', () => desenhando = false);
+  canvas.addEventListener('mousedown', e => {
+    drawing = true;
+    ctx.moveTo(e.offsetX, e.offsetY);
+  });
 
-    function limpar() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+  canvas.addEventListener('mousemove', e => {
+    if (drawing) {
+      ctx.lineTo(e.offsetX, e.offsetY);
+      ctx.stroke();
     }
+  });
 
-    // Registro
-    function registrar() {
-      const responsavel = document.getElementById('responsavel').value;
-      const placa = document.getElementById('placa').value;
-      const horario = document.getElementById('horario').value;
-      const tipo = document.getElementById('tipo').value;
-      const assinatura = canvas.toDataURL();
+  canvas.addEventListener('mouseup', () => drawing = false);
 
-      if (!responsavel || !placa || !horario) {
-        alert("Preencha todos os campos.");
-        return;
-      }
+  function limparAssinatura() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
 
-      const registros = JSON.parse(localStorage.getItem('registros') || '[]');
-      registros.push({ responsavel, placa, horario, tipo, assinatura });
-      localStorage.setItem('registros', JSON.stringify(registros));
-      carregarHistorico();
-      limpar();
-    }
+  function salvarAssinatura() {
+    const dataURL = canvas.toDataURL();
+    localStorage.setItem('assinatura', dataURL);
+    alert('Assinatura salva.');
+  }
 
-    // Histórico
-    function carregarHistorico() {
-      const registros = JSON.parse(localStorage.getItem('registros') || '[]');
-      const historico = document.getElementById('historico');
-      if (registros.length === 0) {
-        historico.innerHTML = "<p>Nenhum registro encontrado.</p>";
-        return;
-      }
-      let html = "<table><tr><th>Responsável</th><th>Veículo</th><th>Horário</th><th>Tipo</th><th>Assinatura</th></tr>";
-      registros.forEach(r => {
-        html += `<tr>
-          <td>${r.responsavel}</td>
-          <td>${r.placa}</td>
-          <td>${r.horario}</td>
-          <td>${r.tipo}</td>
-          <td><img src="${r.assinatura}" width="100"/></td>
-        </tr>`;
-      });
-      html += "</table>";
-      historico.innerHTML = html;
-    }
-
-    // Exportar PDF
-    async function gerarPDF() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      const registros = JSON.parse(localStorage.getItem('registros') || '[]');
-      let y = 10;
-
-      registros.forEach(r => {
-        doc.text(`Responsável: ${r.responsavel}`, 10, y); y += 7;
-        doc.text(`Veículo: ${r.placa}`, 10, y); y += 7;
-        doc.text(`Horário: ${r.horario}`, 10, y); y += 7;
-        doc.text(`Tipo: ${r.tipo}`, 10, y); y += 7;
-        if (r.assinatura) {
-          doc.addImage(r.assinatura, 'PNG', 10, y, 50, 20);
-          y += 25;
-        }
-        if (y > 270) { doc.addPage(); y = 10; }
-      });
-
-      doc.save("historico_keepecar6.pdf");
-    }
-
-    // Backup JSON
-    function fazerBackup() {
-      const registros = localStorage.getItem('registros') || '[]';
-      const blob = new Blob([registros], { type: 'application/json' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = "backup_keepecar6.json";
-      link.click();
-    }
-
-    // Service Worker (PWA)
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(() => console.log('Service Worker registrado com sucesso!'))
-        .catch(e => console.error('Erro no Service Worker:', e));
-    }
-  </script>
+  // PWA Service Worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js');
+  }
+</script>
 
 </body>
 </html>
