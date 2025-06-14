@@ -1,10 +1,20 @@
-self.addEventListener('install', function(event) {
-    console.log('Service Worker instalado');
-    self.skipWaiting();
+self.addEventListener('install', (e) => {
+  e.waitUntil(
+    caches.open('keepecar6-cache').then((cache) => {
+      return cache.addAll([
+        '/',
+        '/index.html',
+        '/manifest.json',
+        '/icon-192.png'
+      ]);
+    })
+  );
 });
 
-self.addEventListener('fetch', function(event) {
-    event.respondWith(fetch(event.request).catch(function() {
-        return new Response('Sem conexão com a internet');
-    }));
+self.addEventListener('fetch', (e) => {
+  e.respondWith(
+    caches.match(e.request).then((response) => {
+      return response || fetch(e.request);
+    })
+  );
 });
