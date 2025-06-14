@@ -1,7 +1,10 @@
-self.addEventListener('install', function(e) {
-  console.log('Service Worker: Instalado');
+self.addEventListener('install', function(event) {
+    console.log('Service Worker instalado');
+    self.skipWaiting();
 });
 
 self.addEventListener('fetch', function(event) {
-  event.respondWith(fetch(event.request).catch(() => new Response('Sem conexão')));
+    event.respondWith(fetch(event.request).catch(function() {
+        return new Response('Sem conexão com a internet');
+    }));
 });
