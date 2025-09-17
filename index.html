@@ -2,245 +2,904 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Keepecar6 - Controle de Veículos</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Japan Security Car</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    body { background-color: #f8f9fa; }
-    .card { margin-bottom: 1rem; }
-    .form-control, .btn { margin-bottom: 0.5rem; }
-    canvas { border: 1px solid #ced4da; width: 100%; height: 150px; touch-action: none; }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+    body {
+      background: linear-gradient(to right, #e0f7fa, #f1f8e9);
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      padding: 1rem;
+    }
+    .container {
+      max-width: 600px;
+      width: 100%;
+      margin-bottom: 0;
+    }
+    .card-custom {
+      border-radius: 1.5rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      background-color: #ffffff;
+      margin-bottom: 1rem;
+      border: none;
+      padding: 1.5rem;
+    }
+    @media (max-width: 576px) {
+      .card-custom {
+        padding: 1rem;
+      }
+    }
+
+    h2 {
+      font-weight: 700;
+      color: #2c3e50;
+      text-align: center;
+      margin-bottom: 2rem;
+      margin-top: 1rem;
+    }
+    h4, h5 {
+      font-weight: 700;
+      color: #2c3e50;
+    }
+    .btn {
+      border-radius: 0.75rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    .btn-primary {
+      background-color: #007bff;
+      border-color: #007bff;
+    }
+    .btn-primary:hover {
+      background-color: #0056b3;
+      border-color: #0056b3;
+      transform: translateY(-2px);
+    }
+    .btn-outline-success {
+      color: #28a745;
+      border-color: #28a745;
+    }
+    .btn-outline-success:hover {
+      background-color: #28a745;
+      color: #fff;
+    }
+    .btn-outline-warning {
+      color: #ffc107;
+      border-color: #ffc107;
+    }
+    .btn-outline-warning:hover {
+      background-color: #ffc107;
+      color: #fff;
+    }
+    .btn-outline-info {
+      color: #17a2b8;
+      border-color: #17a2b8;
+    }
+    .btn-outline-info:hover {
+      background-color: #17a2b8;
+      color: #fff;
+    }
+    .btn-outline-secondary {
+      color: #6c757d;
+      border-color: #6c757d;
+    }
+    .btn-outline-secondary:hover {
+      background-color: #6c757d;
+      color: #fff;
+    }
+    .btn-outline-danger {
+      color: #dc3545;
+      border-color: #dc3545;
+    }
+    .btn-outline-danger:hover {
+      background-color: #dc3545;
+      color: #fff;
+    }
+    input.form-control, select.form-select, textarea.form-control {
+      border-radius: 0.5rem;
+      border: 1px solid #ced4da;
+      padding: 0.75rem 1rem;
+    }
+    input.form-control:focus, select.form-select:focus, textarea.form-control:focus {
+      border-color: #80bdff;
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+    canvas {
+      border: 1px dashed #a0d9ff;
+      background-color: #e9f7ff;
+      width: 100%;
+      height: 200px;
+      display: block !important;
+      box-sizing: border-box;
+      touch-action: none;
+    }
+    pre {
+      background-color: #f8f9fa;
+      border: 1px solid #e9ecef;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      padding: 0.75rem;
+    }
+    .form-check {
+        margin-bottom: 0.5rem;
+    }
+    .btn i {
+      margin-right: 8px;
+    }
+
+    /* Custom Modal Styles */
+    .custom-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1050;
+    }
+    .custom-modal-content {
+      background: #ffffff;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      position: relative;
+      margin: auto;
+    }
+    .custom-modal-content h5 {
+      margin-bottom: 1rem;
+      color: #007bff;
+    }
+    .custom-modal-content p {
+      margin-bottom: 1.5rem;
+      color: #333;
+    }
+    .custom-modal-close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 1.5rem;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: #aaa;
+    }
+    .custom-modal-close-btn:hover {
+      color: #555;
+    }
+
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.8);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    .spinner {
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border-left-color: #0d6efd;
+        animation: spin 1s ease infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    .user-info {
+        background-color: #f1f1f1;
+        padding: 10px;
+        border-radius: 10px;
+        margin-top: 10px;
+        font-size: 0.9em;
+        text-align: center;
+        word-wrap: break-word;
+    }
   </style>
 </head>
-<body class="container py-3">
+<body>
 
-<h2 class="text-center mb-4">Keepecar6 - Controle de Veículos</h2>
-
-<div id="login" class="card p-3">
-  <h5>Login</h5>
-  <input type="text" id="user" class="form-control" placeholder="Usuário">
-  <input type="password" id="pass" class="form-control" placeholder="Senha">
-  <button class="btn btn-primary" onclick="login()">Entrar</button>
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
 </div>
 
-<div id="menu" class="d-none">
-  <div class="card p-3">
-    <h5>Menu Principal</h5>
-    <button class="btn btn-success" onclick="show('cadastroVeiculo')">Cadastro de Veículos</button>
-    <button class="btn btn-warning" onclick="show('registro')">Registro de Movimentação</button>
-    <button class="btn btn-info" onclick="showHistorico()">Histórico</button>
-    <button class="btn btn-secondary" onclick="logout()">Sair</button>
-  </div>
-</div>
+<div class="container py-5">
+  <h2 class="text-center mb-5"><i class="fas fa-car-side"></i> Japan Security Car</h2>
 
-<div id="cadastroVeiculo" class="card p-3 d-none">
-  <h5>Cadastro de Veículos</h5>
-  <input type="text" id="novoVeiculo" class="form-control" placeholder="Placa do Veículo">
-  <button class="btn btn-primary" onclick="salvarVeiculo()">Salvar Veículo</button>
-  <button class="btn btn-secondary" onclick="voltar()">Voltar</button>
-</div>
-
-<div id="registro" class="card p-3 d-none">
-  <h5>Registro de Movimentação</h5>
-  <input type="text" id="responsavel" class="form-control" placeholder="Nome do Responsável">
-  <select id="placaSelect" class="form-control mb-2"></select>
-
-  <label for="dataHora">Data e Hora:</label>
-  <input type="datetime-local" id="dataHora" class="form-control">
-
-  <h6>Checklist:</h6>
-  <div class="form-check">
-    <input class="form-check-input" type="checkbox" id="macaco">
-    <label class="form-check-label">Macaco</label>
-  </div>
-  <div class="form-check">
-    <input class="form-check-input" type="checkbox" id="triangulo">
-    <label class="form-check-label">Triângulo</label>
-  </div>
-  <div class="form-check">
-    <input class="form-check-input" type="checkbox" id="estepe">
-    <label class="form-check-label">Estepe</label>
-  </div>
-  <div class="form-check">
-    <input class="form-check-input" type="checkbox" id="agua">
-    <label class="form-check-label">Água</label>
-  </div>
-  <div class="form-check">
-    <input class="form-check-input" type="checkbox" id="oleo">
-    <label class="form-check-label">Óleo</label>
+  <div id="login" class="card card-custom p-4">
+    <h4 class="mb-3"><i class="fas fa-lock"></i> Login de Acesso</h4>
+    <input type="text" id="user" class="form-control mb-3" placeholder="Usuário">
+    <input type="password" id="pass" class="form-control mb-3" placeholder="Senha">
+    <button class="btn btn-primary w-100" id="loginBtn"><i class="fas fa-sign-in-alt"></i> Entrar</button>
   </div>
 
-  <label>Observação ou Avaria de Veículo:</label>
-  <textarea id="observacao" class="form-control"></textarea>
-
-  <h6>Assinatura:</h6>
-  <canvas id="canvas"></canvas>
-  <button class="btn btn-outline-secondary" onclick="limparAssinatura()">Limpar Assinatura</button>
-  <button class="btn btn-success" onclick="salvarRegistro()">Salvar Registro</button>
-  <button class="btn btn-secondary" onclick="voltar()">Voltar</button>
-</div>
-
-<div id="historico" class="card p-3 d-none">
-  <h5>Histórico de Movimentações</h5>
-  <label>Filtrar por Período:</label>
-  <div class="row mb-2">
-    <div class="col">
-      <input type="date" id="filtroDataInicio" class="form-control">
+  <div id="menu" class="card card-custom p-4 d-none">
+    <h4 class="mb-4"><i class="fas fa-bars"></i> Menu Principal</h4>
+    <div class="user-info">
+      Seu ID de Usuário: <span id="userIdDisplay"></span>
     </div>
-    <div class="col">
-      <input type="date" id="filtroDataFim" class="form-control">
+    <div class="d-grid gap-2 mt-3">
+      <button class="btn btn-outline-success" id="showCadastroBtn"><i class="fas fa-car"></i> Cadastro de Veículos</button>
+      <button class="btn btn-outline-warning" id="showRegistroBtn"><i class="fas fa-pen-to-square"></i> Registro de Movimentação</button>
+      <button class="btn btn-outline-info" id="showPesquisaBtn"><i class="fas fa-search"></i> Pesquisar por Data</button>
+      <button class="btn btn-outline-secondary" id="showHistoricoBtn"><i class="fas fa-history"></i> Ver Histórico Completo</button>
+      <button class="btn btn-outline-danger" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Sair</button>
     </div>
   </div>
-  <button class="btn btn-primary mb-2" onclick="filtrarHistorico()">Aplicar Filtro</button>
-  <div id="historicoContent" style="white-space: pre-wrap; max-height: 300px; overflow-y:auto;"></div>
-  <button class="btn btn-success mb-1" onclick="exportToExcel()">Exportar para Excel</button>
-  <button class="btn btn-danger mb-1" onclick="fazerBackupPDF()">Exportar para PDF</button>
-  <button class="btn btn-secondary" onclick="voltar()">Voltar</button>
+
+  <div id="cadastroVeiculo" class="card card-custom p-4 d-none">
+    <h4 class="mb-3"><i class="fas fa-car-alt"></i> Cadastro de Veículos</h4>
+    <input type="text" id="novoVeiculo" class="form-control mb-3" placeholder="Placa do Veículo">
+    <button class="btn btn-primary w-100 mb-2" id="salvarVeiculoBtn"><i class="fas fa-save"></i> Salvar Veículo</button>
+    <button class="btn btn-secondary w-100" id="voltarFromCadastroBtn"><i class="fas fa-arrow-left"></i> Voltar</button>
+  </div>
+
+  <div id="registro" class="card card-custom p-4 d-none">
+    <h4 class="mb-3"><i class="fas fa-clipboard-list"></i> Registro de Movimentação</h4>
+    <input type="text" id="responsavel" class="form-control mb-3" placeholder="Responsável">
+    <select id="placaSelect" class="form-select mb-3">
+      <option value="">Selecione o Veículo</option>
+    </select>
+    <select id="tipoMovimento" class="form-select mb-3">
+      <option value="Saída">Saída</option>
+      <option value="Chegada">Chegada</option>
+    </select>
+    <input type="datetime-local" id="dataHora" class="form-control mb-3">
+
+    <h5 class="mt-3 mb-2"><i class="fas fa-list-check"></i> Checklist de Itens:</h5>
+    <div class="form-check mb-2">
+      <input class="form-check-input" type="checkbox" id="checkMacaco">
+      <label class="form-check-label" for="checkMacaco">Macaco</label>
+    </div>
+    <div class="form-check mb-2">
+      <input class="form-check-input" type="checkbox" id="checkOleo">
+      <label class="form-check-label" for="checkOleo">Óleo</label>
+    </div>
+    <div class="form-check mb-2">
+      <input class="form-check-input" type="checkbox" id="checkStep">
+      <label class="form-check-label" for="checkStep">Estepe</label>
+    </div>
+    <div class="form-check mb-2">
+      <input class="form-check-input" type="checkbox" id="checkAgua">
+      <label class="form-check-label" for="checkAgua">Água</label>
+    </div>
+    <div class="form-check mb-3">
+      <input class="form-check-input" type="checkbox" id="checkDocumento">
+      <label class="form-check-label" for="checkDocumento">Documento</label>
+    </div>
+
+    <h5 class="mt-3 mb-2"><i class="fas fa-comment-dots"></i> Observação:</h5>
+    <textarea id="observacao" class="form-control mb-3" rows="3" placeholder="Adicione observações adicionais aqui..."></textarea>
+
+    <h5 class="mt-3"><i class="fas fa-signature"></i> Assinatura:</h5>
+    <canvas id="canvas" class="mb-3" width="400" height="200"></canvas>
+    <button class="btn btn-outline-secondary w-100 mb-2" id="limparAssinaturaBtn"><i class="fas fa-eraser"></i> Limpar Assinatura</button>
+    <button class="btn btn-success w-100 mb-2" id="salvarRegistroBtn"><i class="fas fa-save"></i> Salvar Registro</button>
+    <button class="btn btn-secondary w-100" id="voltarFromRegistroBtn"><i class="fas fa-arrow-left"></i> Voltar</button>
+  </div>
+
+  <div id="pesquisa" class="card card-custom p-4 d-none">
+    <h4 class="mb-3"><i class="fas fa-search-plus"></i> Pesquisa por Data e Hora</h4>
+    <input type="datetime-local" id="dataInicio" class="form-control mb-2">
+    <input type="datetime-local" id="dataFim" class="form-control mb-3">
+    <button class="btn btn-info w-100 mb-3" id="filtrarBtn"><i class="fas fa-filter"></i> Pesquisar</button>
+    <pre id="resultadoPesquisa"></pre>
+    <div class="d-grid gap-2 mt-3">
+      <button class="btn btn-info" id="exportFilteredPdfBtn"><i class="fas fa-file-pdf"></i> Exportar Pesquisa para PDF</button>
+      <button class="btn btn-success" id="exportFilteredExcelBtn"><i class="fas fa-file-excel"></i> Exportar Pesquisa para Excel</button>
+    </div>
+    <button class="btn btn-secondary w-100 mt-3" id="voltarFromPesquisaBtn"><i class="fas fa-arrow-left"></i> Voltar</button>
+  </div>
+
+  <div id="historico" class="card card-custom p-4 d-none">
+    <h4 class="mb-3"><i class="fas fa-book"></i> Histórico Completo</h4>
+    <pre id="historicoContent"></pre>
+    <div class="d-grid gap-2 mt-3">
+      <button class="btn btn-info" id="exportPdfBtn"><i class="fas fa-file-pdf"></i> Exportar para PDF</button>
+      <button class="btn btn-success" id="exportExcelBtn"><i class="fas fa-file-excel"></i> Exportar para Excel</button>
+    </div>
+    <button class="btn btn-secondary w-100 mt-3" id="voltarFromHistoricoBtn"><i class="fas fa-arrow-left"></i> Voltar</button>
+  </div>
+
 </div>
 
-<script>
+<!-- Custom Alert Modal -->
+<div id="customAlertModal" class="custom-modal-overlay d-none">
+  <div class="custom-modal-content">
+    <button class="custom-modal-close-btn" id="closeAlertBtn">&times;</button>
+    <h5 id="alertModalTitle"></h5>
+    <p id="alertModalMessage"></p>
+    <button class="btn btn-primary" id="okAlertBtn">OK</button>
+  </div>
+</div>
+
+<script type="module">
+  // Firebase SDK imports
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+  import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+  import { getFirestore, collection, addDoc, onSnapshot, query, setDoc, doc, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+  import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+  // Global variables provided by the Canvas environment
+  const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+  const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+  const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+  // Firebase app and services
+  let app;
+  let db;
+  let auth;
+  let userId = null;
+  let historicoCompleto = [];
+  let veiculos = [];
+  let currentFilteredRecords = [];
+  let canvas;
+  let ctx;
+  let desenhando = false;
+
+  // Habilita logs para depuração do Firestore
+  setLogLevel('debug');
+
+  // Registra o Service Worker para habilitar o PWA
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(registration => {
+          console.log('Service Worker registrado com sucesso:', registration);
+        })
+        .catch(error => {
+          console.error('Falha no registro do Service Worker:', error);
+        });
+    });
+  }
+
+  // --- Funções de UI e Autenticação ---
+  function showLoading() {
+    document.getElementById('loadingOverlay').style.display = 'flex';
+  }
+
+  function hideLoading() {
+    document.getElementById('loadingOverlay').style.display = 'none';
+  }
+
+  function showAlertModal(title, message) {
+    document.getElementById('alertModalTitle').innerText = title;
+    document.getElementById('alertModalMessage').innerText = message;
+    document.getElementById('customAlertModal').classList.remove('d-none');
+  }
+
+  function hideAlertModal() {
+    document.getElementById('customAlertModal').classList.add('d-none');
+  }
+
   function login() {
-    if (document.getElementById('user').value === 'admin' && document.getElementById('pass').value === 'admin1') {
+    const u = document.getElementById('user').value.trim();
+    const p = document.getElementById('pass').value.trim();
+    const usuarios = [{ user: 'admin', pass: 'admin1' }, { user: 'user2', pass: 'senha2' }];
+    const autorizado = usuarios.some(item => item.user === u && item.pass === p);
+    if (autorizado) {
       document.getElementById('login').classList.add('d-none');
       document.getElementById('menu').classList.remove('d-none');
-      carregarVeiculos();
+      console.log('Login local bem-sucedido. O app já está autenticado com o Firebase.');
     } else {
-      alert('Usuário ou senha incorretos!');
+      showAlertModal('Erro de Login', 'Usuário ou senha incorretos!');
+      console.log('Falha no login.');
     }
   }
 
-  function logout() { location.reload(); }
-  function voltar() { show('menu'); }
-
-  function show(id) {
-    ['menu', 'cadastroVeiculo', 'registro', 'historico'].forEach(e => document.getElementById(e).classList.add('d-none'));
-    document.getElementById(id).classList.remove('d-none');
-    if (id === 'registro') carregarVeiculos();
+  function logout() {
+    location.reload();
   }
 
-  function salvarVeiculo() {
-    let novo = document.getElementById('novoVeiculo').value.trim();
+  function show(id) {
+    ['login', 'menu', 'cadastroVeiculo', 'registro', 'historico', 'pesquisa'].forEach(e => document.getElementById(e).classList.add('d-none'));
+
+    const targetElement = document.getElementById(id);
+    if (targetElement) {
+      targetElement.classList.remove('d-none');
+    }
+
+    if (id === 'registro') {
+      carregarVeiculos();
+      setTimeout(() => {
+        if (canvas && ctx) {
+          resizeCanvas();
+          limparAssinatura();
+        }
+      }, 100);
+    }
+    if (id !== 'pesquisa') {
+      document.getElementById('resultadoPesquisa').innerText = '';
+      currentFilteredRecords = [];
+    }
+  }
+
+  function voltar() {
+    show('menu');
+  }
+
+  // --- Funções de Veículo (Firebase) ---
+  async function salvarVeiculo() {
+    const novo = document.getElementById('novoVeiculo').value.trim();
     if (novo) {
-      let veiculos = JSON.parse(localStorage.getItem('veiculos') || '[]');
-      veiculos.push(novo);
-      localStorage.setItem('veiculos', JSON.stringify(veiculos));
-      alert('Veículo cadastrado.');
-      document.getElementById('novoVeiculo').value = '';
+      const placaRef = doc(db, `artifacts/${appId}/users/${userId}/veiculos`, novo);
+      await setDoc(placaRef, { placa: novo })
+        .then(() => {
+          showAlertModal('Sucesso', 'Veículo cadastrado com sucesso!');
+          document.getElementById('novoVeiculo').value = '';
+        })
+        .catch(e => {
+          console.error("Erro ao salvar veículo: ", e);
+          showAlertModal('Erro', 'Ocorreu um erro ao salvar o veículo.');
+        });
+    } else {
+      showAlertModal('Atenção', 'Por favor, digite a placa do veículo.');
     }
   }
 
   function carregarVeiculos() {
-    let veiculos = JSON.parse(localStorage.getItem('veiculos') || '[]');
-    let select = document.getElementById('placaSelect');
+    const select = document.getElementById('placaSelect');
     select.innerHTML = '<option value="">Selecione o Veículo</option>';
     veiculos.forEach(v => {
-      let opt = document.createElement('option');
+      const opt = document.createElement('option');
       opt.value = v;
       opt.textContent = v;
       select.appendChild(opt);
     });
   }
 
-  const canvas = document.getElementById('canvas');
-  const ctx = canvas.getContext('2d');
-  let desenhando = false;
-  canvas.addEventListener('mousedown', e => { desenhando = true; ctx.moveTo(e.offsetX, e.offsetY); });
-  canvas.addEventListener('mousemove', e => { if (desenhando) { ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); } });
-  canvas.addEventListener('mouseup', () => { desenhando = false; });
-  canvas.addEventListener('touchstart', e => { e.preventDefault(); desenhando = true; let pos = getPos(e); ctx.moveTo(pos.x, pos.y); });
-  canvas.addEventListener('touchmove', e => { e.preventDefault(); if (desenhando) { let pos = getPos(e); ctx.lineTo(pos.x, pos.y); ctx.stroke(); } });
-  canvas.addEventListener('touchend', () => { desenhando = false; });
-  function getPos(e) {
-    const rect = canvas.getBoundingClientRect();
-    if (e.touches) return { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top };
-    else return { x: e.offsetX, y: e.offsetY };
+  // --- Funções de Assinatura ---
+  function setupCanvasDrawing() {
+    if (!ctx) return;
+    ctx.lineWidth = 3;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = '#000';
   }
-  function limparAssinatura() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
 
-  function salvarRegistro() {
-    const registro = {
-      responsavel: document.getElementById('responsavel').value,
-      placa: document.getElementById('placaSelect').value,
-      dataHora: document.getElementById('dataHora').value,
-      macaco: document.getElementById('macaco').checked,
-      triangulo: document.getElementById('triangulo').checked,
-      estepe: document.getElementById('estepe').checked,
-      agua: document.getElementById('agua').checked,
-      oleo: document.getElementById('oleo').checked,
-      observacao: document.getElementById('observacao').value,
-      assinatura: canvas.toDataURL()
-    };
-    if (!registro.placa) { alert('Selecione um veículo.'); return; }
-    let historico = JSON.parse(localStorage.getItem('historico') || '[]');
-    historico.push(registro);
-    localStorage.setItem('historico', JSON.stringify(historico));
-    alert('Registro salvo.');
+  function resizeCanvas() {
+    if (!canvas || !ctx) return;
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(dpr, dpr);
+    setupCanvasDrawing();
     limparAssinatura();
-    voltar();
+  }
+
+  function getCanvasCoords(e) {
+    const rect = canvas.getBoundingClientRect();
+    let clientX, clientY;
+    if (e.touches && e.touches.length > 0) {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
+    return {
+      x: (clientX - rect.left),
+      y: (clientY - rect.top)
+    };
+  }
+
+  function limparAssinatura() {
+    if (!ctx) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    setupCanvasDrawing();
+  }
+
+  // --- Funções de Registro (Firebase) ---
+  async function salvarRegistro() {
+    const responsavel = document.getElementById('responsavel').value.trim();
+    const placa = document.getElementById('placaSelect').value;
+    const tipo = document.getElementById('tipoMovimento').value;
+    const dataHoraStr = document.getElementById('dataHora').value;
+    const checkMacaco = document.getElementById('checkMacaco').checked;
+    const checkOleo = document.getElementById('checkOleo').checked;
+    const checkStep = document.getElementById('checkStep').checked;
+    const checkAgua = document.getElementById('checkAgua').checked;
+    const checkDocumento = document.getElementById('checkDocumento').checked;
+    const observacao = document.getElementById('observacao').value.trim();
+    const assinatura = ctx ? canvas.toDataURL() : null;
+
+    if (!responsavel || !placa || !dataHoraStr) {
+      showAlertModal('Campos Ausentes', 'Por favor, preencha todos os campos obrigatórios.');
+      return;
+    }
+
+    const blankCanvas = document.createElement('canvas');
+    blankCanvas.width = canvas.width;
+    blankCanvas.height = canvas.height;
+    if (!ctx || assinatura === null || assinatura === blankCanvas.toDataURL()) {
+      showAlertModal('Assinatura Necessária', 'Por favor, adicione sua assinatura.');
+      return;
+    }
+
+    const registro = {
+      responsavel: responsavel,
+      placa: placa,
+      tipo: tipo,
+      dataHora: new Date(dataHoraStr),
+      checkMacaco: checkMacaco,
+      checkOleo: checkOleo,
+      checkStep: checkStep,
+      checkAgua: checkAgua,
+      checkDocumento: checkDocumento,
+      observacao: observacao,
+      assinatura: assinatura,
+      timestamp: serverTimestamp()
+    };
+
+    showLoading();
+    await addDoc(collection(db, `artifacts/${appId}/users/${userId}/registros`), registro)
+      .then(() => {
+        hideLoading();
+        showAlertModal('Sucesso', 'Registro salvo na nuvem com sucesso!');
+        // Limpar formulário
+        document.getElementById('responsavel').value = '';
+        document.getElementById('placaSelect').value = '';
+        document.getElementById('dataHora').value = '';
+        document.getElementById('checkMacaco').checked = false;
+        document.getElementById('checkOleo').checked = false;
+        document.getElementById('checkStep').checked = false;
+        document.getElementById('checkAgua').checked = false;
+        document.getElementById('checkDocumento').checked = false;
+        document.getElementById('observacao').value = '';
+        limparAssinatura();
+        voltar();
+      })
+      .catch(e => {
+        hideLoading();
+        console.error("Erro ao salvar registro: ", e);
+        showAlertModal('Erro', 'Ocorreu um erro ao salvar o registro na nuvem.');
+      });
   }
 
   function showHistorico() {
-    filtrarHistorico();
+    let txt = '';
+    if (historicoCompleto.length === 0) {
+      txt = 'Nenhum registro encontrado.';
+    } else {
+      historicoCompleto.forEach((r, i) => {
+        const dataHora = r.dataHora ? new Date(r.dataHora.seconds * 1000).toLocaleString() : 'Data inválida';
+        txt += `#${i + 1} - ${r.tipo} - ${dataHora}\n`;
+        txt += `Responsável: ${r.responsavel}\nPlaca: ${r.placa}\n`;
+        txt += `Checklist: Macaco(${r.checkMacaco ? 'Sim' : 'Não'}), Óleo(${r.checkOleo ? 'Sim' : 'Não'}), Estepe(${r.checkStep ? 'Sim' : 'Não'}), Água(${r.checkAgua ? 'Sim' : 'Não'}), Documento(${r.checkDocumento ? 'Sim' : 'Não'})\n`;
+        txt += `Observação: ${r.observacao || 'N/A'}\n---\n`;
+      });
+    }
+    document.getElementById('historicoContent').innerText = txt;
     show('historico');
   }
 
-  function filtrarHistorico() {
-    let h = JSON.parse(localStorage.getItem('historico') || '[]');
-    let inicio = document.getElementById('filtroDataInicio').value;
-    let fim = document.getElementById('filtroDataFim').value;
-    let txt = '';
-    h.forEach((r, i) => {
-      if (r.dataHora) {
-        let dataRegistro = r.dataHora.substring(0,10);
-        let dentroPeriodo = true;
-        if (inicio && dataRegistro < inicio) dentroPeriodo = false;
-        if (fim && dataRegistro > fim) dentroPeriodo = false;
-        if (dentroPeriodo) {
-          txt += `Registro ${i + 1}:
-Responsável: ${r.responsavel}
-Placa: ${r.placa}
-DataHora: ${r.dataHora}
-Checklist: [Macaco: ${r.macaco}, Triângulo: ${r.triangulo}, Estepe: ${r.estepe}, Água: ${r.agua}, Óleo: ${r.oleo}]
-Observação: ${r.observacao}
----\n`;
-        }
-      }
+  function filtrarPorData() {
+    let inicioStr = document.getElementById('dataInicio').value;
+    let fimStr = document.getElementById('dataFim').value.trim();
+
+    if (!inicioStr || !fimStr) {
+      showAlertModal('Campos Ausentes', 'Por favor, preencha as datas de início e fim para a pesquisa.');
+      return;
+    }
+
+    let inicio = new Date(inicioStr).getTime();
+    let fim = new Date(fimStr).getTime();
+    fim += (23 * 60 * 60 * 1000 + 59 * 60 * 1000 + 59 * 1000 + 999);
+
+    const filteredRecords = historicoCompleto.filter(r => {
+      const registroDate = r.dataHora.seconds * 1000;
+      return registroDate >= inicio && registroDate <= fim;
     });
-    document.getElementById('historicoContent').innerText = txt || 'Nenhum registro encontrado.';
+
+    currentFilteredRecords = filteredRecords;
+
+    let resultado = '';
+    if (filteredRecords.length === 0) {
+      resultado = 'Nenhum registro encontrado para o período selecionado.';
+    } else {
+      filteredRecords.forEach((r, i) => {
+        const dataHora = r.dataHora ? new Date(r.dataHora.seconds * 1000).toLocaleString() : 'Data inválida';
+        resultado += `#${i + 1} - ${r.tipo} - ${dataHora}\n`;
+        resultado += `Responsável: ${r.responsavel}\nPlaca: ${r.placa}\n`;
+        resultado += `Checklist: Macaco(${r.checkMacaco ? 'Sim' : 'Não'}), Óleo(${r.checkOleo ? 'Sim' : 'Não'}), Estepe(${r.checkStep ? 'Sim' : 'Não'}), Água(${r.checkAgua ? 'Sim' : 'Não'}), Documento(${r.checkDocumento ? 'Sim' : 'Não'})\n`;
+        resultado += `Observação: ${r.observacao || 'N/A'}\n---\n`;
+      });
+    }
+    document.getElementById('resultadoPesquisa').innerText = resultado;
   }
 
-  function exportToExcel() {
-    let h = JSON.parse(localStorage.getItem('historico') || '[]');
-    let ws = XLSX.utils.json_to_sheet(h);
-    let wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Historico");
-    XLSX.writeFile(wb, "historico_keepecar6.xlsx");
-  }
+  // --- Funções de Exportação ---
+  async function exportToPdf() {
+    if (historicoCompleto.length === 0) {
+      showAlertModal('Exportação', 'Nenhum registro para exportar para PDF.');
+      return;
+    }
 
-  async function fazerBackupPDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-    let h = JSON.parse(localStorage.getItem('historico') || '[]');
-    let y = 20;
-    doc.setFontSize(16);
-    doc.text('Backup de Movimentação - Keepecar6', 20, y);
-    y += 10;
-    h.forEach((r, i) => {
-      doc.setFontSize(10);
-      doc.text(`Registro ${i + 1}:`, 20, y); y+=5;
-      doc.text(`Responsável: ${r.responsavel}`, 20, y); y+=5;
-      doc.text(`Placa: ${r.placa}`, 20, y); y+=5;
-      doc.text(`DataHora: ${r.dataHora}`, 20, y); y+=5;
-      doc.text(`Checklist: Macaco: ${r.macaco}, Triângulo: ${r.triangulo}, Estepe: ${r.estepe}, Água: ${r.agua}, Óleo: ${r.oleo}`, 20, y); y+=5;
-      doc.text(`Observação: ${r.observacao}`, 20, y); y+=10;
-      if (y > 270) { doc.addPage(); y = 20; }
-    });
-    doc.save('backup_keepecar6.pdf');
+    doc.setFontSize(18);
+    doc.text("Histórico Completo de Movimentação de Veículos - Japan Security Car", 14, 22);
+
+    const tableColumn = ["#", "Tipo", "Data/Hora", "Responsável", "Placa", "Macaco", "Óleo", "Estepe", "Água", "Documento", "Observação"];
+    const tableRows = historicoCompleto.map((record, index) => [
+      index + 1,
+      record.tipo,
+      new Date(record.dataHora.seconds * 1000).toLocaleString(),
+      record.responsavel,
+      record.placa,
+      record.checkMacaco ? 'Sim' : 'Não',
+      record.checkOleo ? 'Sim' : 'Não',
+      record.checkStep ? 'Sim' : 'Não',
+      record.checkAgua ? 'Sim' : 'Não',
+      record.checkDocumento ? 'Sim' : 'Não',
+      record.observacao || 'N/A'
+    ]);
+
+    doc.autoTable({ head: [tableColumn], body: tableRows, startY: 30 });
+    doc.save('historico_veiculos_completo.pdf');
+    showAlertModal('Exportação', 'Histórico completo exportado para PDF com sucesso!');
   }
+
+  async function exportToExcel() {
+    if (historicoCompleto.length === 0) {
+      showAlertModal('Exportação', 'Nenhum registro para exportar para Excel.');
+      return;
+    }
+
+    const ws_data = [
+      ["#", "Tipo", "Data/Hora", "Responsável", "Placa", "Macaco", "Óleo", "Estepe", "Água", "Documento", "Observação"]
+    ];
+
+    historicoCompleto.forEach((record, index) => {
+      ws_data.push([
+        index + 1,
+        record.tipo,
+        new Date(record.dataHora.seconds * 1000).toLocaleString(),
+        record.responsavel,
+        record.placa,
+        record.checkMacaco ? 'Sim' : 'Não',
+        record.checkOleo ? 'Sim' : 'Não',
+        record.checkStep ? 'Sim' : 'Não',
+        record.checkAgua ? 'Sim' : 'Não',
+        record.checkDocumento ? 'Sim' : 'Não',
+        record.observacao || 'N/A'
+      ]);
+    });
+
+    const ws = XLSX.utils.aoa_to_sheet(ws_data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Histórico");
+    XLSX.writeFile(wb, "historico_veiculos_completo.xlsx");
+    showAlertModal('Exportação', 'Histórico completo exportado para Excel com sucesso!');
+  }
+
+  async function exportFilteredToPdf() {
+    if (currentFilteredRecords.length === 0) {
+      showAlertModal('Exportação', 'Nenhum registro filtrado para exportar para PDF.');
+      return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    doc.setFontSize(18);
+    doc.text("Resultados da Pesquisa de Veículos - Japan Security Car", 14, 22);
+
+    const tableColumn = ["#", "Tipo", "Data/Hora", "Responsável", "Placa", "Macaco", "Óleo", "Estepe", "Água", "Documento", "Observação"];
+    const tableRows = currentFilteredRecords.map((record, index) => [
+      index + 1,
+      record.tipo,
+      new Date(record.dataHora.seconds * 1000).toLocaleString(),
+      record.responsavel,
+      record.placa,
+      record.checkMacaco ? 'Sim' : 'Não',
+      record.checkOleo ? 'Sim' : 'Não',
+      record.checkStep ? 'Sim' : 'Não',
+      record.checkAgua ? 'Sim' : 'Não',
+      record.checkDocumento ? 'Sim' : 'Não',
+      record.observacao || 'N/A'
+    ]);
+
+    doc.autoTable({ head: [tableColumn], body: tableRows, startY: 30 });
+    doc.save('pesquisa_veiculos.pdf');
+    showAlertModal('Exportação', 'Resultados da pesquisa exportados para PDF com sucesso!');
+  }
+
+  async function exportFilteredToExcel() {
+    if (currentFilteredRecords.length === 0) {
+      showAlertModal('Exportação', 'Nenhum registro filtrado para exportar para Excel.');
+      return;
+    }
+
+    const ws_data = [
+      ["#", "Tipo", "Data/Hora", "Responsável", "Placa", "Macaco", "Óleo", "Estepe", "Água", "Documento", "Observação"]
+    ];
+
+    currentFilteredRecords.forEach((record, index) => {
+      ws_data.push([
+        index + 1,
+        record.tipo,
+        new Date(record.dataHora.seconds * 1000).toLocaleString(),
+        record.responsavel,
+        record.placa,
+        record.checkMacaco ? 'Sim' : 'Não',
+        record.checkOleo ? 'Sim' : 'Não',
+        record.checkStep ? 'Sim' : 'Não',
+        record.checkAgua ? 'Sim' : 'Não',
+        record.checkDocumento ? 'Sim' : 'Não',
+        record.observacao || 'N/A'
+      ]);
+    });
+
+    const ws = XLSX.utils.aoa_to_sheet(ws_data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Pesquisa");
+    XLSX.writeFile(wb, "pesquisa_veiculos.xlsx");
+    showAlertModal('Exportação', 'Resultados da pesquisa exportados para Excel com sucesso!');
+  }
+
+  // --- Inicialização da Aplicação ---
+  window.onload = function() {
+    console.log("Inicializando aplicação...");
+    if (firebaseConfig.apiKey) {
+      app = initializeApp(firebaseConfig);
+      auth = getAuth(app);
+      db = getFirestore(app);
+
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          userId = user.uid;
+          document.getElementById('userIdDisplay').innerText = userId;
+          console.log("Autenticado com sucesso. UID:", userId);
+
+          // Listeners para os dados do Firestore
+          onSnapshot(query(collection(db, `artifacts/${appId}/users/${userId}/registros`), orderBy('timestamp', 'desc')), (querySnapshot) => {
+            historicoCompleto = [];
+            querySnapshot.forEach((doc) => {
+              historicoCompleto.push(doc.data());
+            });
+            console.log("Dados de registros atualizados do Firestore.");
+          });
+
+          onSnapshot(collection(db, `artifacts/${appId}/users/${userId}/veiculos`), (querySnapshot) => {
+            veiculos = [];
+            querySnapshot.forEach((doc) => {
+              veiculos.push(doc.data().placa);
+            });
+            carregarVeiculos();
+            console.log("Dados de veículos atualizados do Firestore.");
+          });
+        } else {
+          try {
+            if (initialAuthToken) {
+              await signInWithCustomToken(auth, initialAuthToken);
+            } else {
+              await signInAnonymously(auth);
+            }
+          } catch (error) {
+            console.error("Erro na autenticação:", error);
+            showAlertModal('Erro de Autenticação', 'Não foi possível autenticar a aplicação. Por favor, tente novamente.');
+          }
+        }
+      });
+    } else {
+      console.error("Configuração do Firebase não encontrada.");
+      showAlertModal('Erro de Configuração', 'A configuração do Firebase não foi encontrada. O aplicativo não funcionará corretamente.');
+    }
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    canvas = document.getElementById('canvas');
+    if (canvas) {
+      ctx = canvas.getContext('2d');
+      if (ctx) {
+        setupCanvasDrawing();
+        resizeCanvas();
+
+        canvas.addEventListener('mousedown', e => {
+          desenhando = true;
+          const coords = getCanvasCoords(e);
+          ctx.beginPath();
+          ctx.moveTo(coords.x, coords.y);
+        });
+        canvas.addEventListener('mousemove', e => {
+          if (!desenhando) return;
+          const coords = getCanvasCoords(e);
+          ctx.lineTo(coords.x, coords.y);
+          ctx.stroke();
+        });
+        canvas.addEventListener('mouseup', () => {
+          desenhando = false;
+          ctx.closePath();
+        });
+        canvas.addEventListener('mouseout', () => {
+          if (desenhando) {
+            desenhando = false;
+            ctx.closePath();
+          }
+        });
+        canvas.addEventListener('touchstart', e => {
+          e.preventDefault();
+          desenhando = true;
+          const coords = getCanvasCoords(e);
+          ctx.beginPath();
+          ctx.moveTo(coords.x, coords.y);
+        });
+        canvas.addEventListener('touchmove', e => {
+          e.preventDefault();
+          if (!desenhando) return;
+          const coords = getCanvasCoords(e);
+          ctx.lineTo(coords.x, coords.y);
+          ctx.stroke();
+        });
+        canvas.addEventListener('touchend', () => {
+          desenhando = false;
+          ctx.closePath();
+        });
+        canvas.addEventListener('touchcancel', () => {
+          if (desenhando) {
+            desenhando = false;
+            ctx.closePath();
+          }
+        });
+      }
+    }
+
+    document.getElementById('loginBtn')?.addEventListener('click', login);
+    document.getElementById('showCadastroBtn')?.addEventListener('click', () => show('cadastroVeiculo'));
+    document.getElementById('showRegistroBtn')?.addEventListener('click', () => show('registro'));
+    document.getElementById('showPesquisaBtn')?.addEventListener('click', () => show('pesquisa'));
+    document.getElementById('showHistoricoBtn')?.addEventListener('click', showHistorico);
+    document.getElementById('logoutBtn')?.addEventListener('click', logout);
+    document.getElementById('salvarVeiculoBtn')?.addEventListener('click', salvarVeiculo);
+    document.getElementById('voltarFromCadastroBtn')?.addEventListener('click', voltar);
+    document.getElementById('limparAssinaturaBtn')?.addEventListener('click', limparAssinatura);
+    document.getElementById('salvarRegistroBtn')?.addEventListener('click', salvarRegistro);
+    document.getElementById('voltarFromRegistroBtn')?.addEventListener('click', voltar);
+    document.getElementById('filtrarBtn')?.addEventListener('click', filtrarPorData);
+    document.getElementById('exportFilteredPdfBtn')?.addEventListener('click', exportFilteredToPdf);
+    document.getElementById('exportFilteredExcelBtn')?.addEventListener('click', exportFilteredToExcel);
+    document.getElementById('voltarFromPesquisaBtn')?.addEventListener('click', voltar);
+    document.getElementById('exportPdfBtn')?.addEventListener('click', exportToPdf);
+    document.getElementById('exportExcelBtn')?.addEventListener('click', exportToExcel);
+    document.getElementById('voltarFromHistoricoBtn')?.addEventListener('click', voltar);
+    document.getElementById('closeAlertBtn')?.addEventListener('click', hideAlertModal);
+    document.getElementById('okAlertBtn')?.addEventListener('click', hideAlertModal);
+  });
+  
+  window.addEventListener('resize', resizeCanvas);
 </script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </body>
 </html>
-
